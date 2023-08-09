@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: ewoJImF1dGhzIjogewoJCSJoYXJib3IuNDUuMTM1LjU3LjU5Lm5pcC5pbyI6IHsKCQkJImF1dGgiOiAiYjNSdmJXa3RaRzlqYTJWeU9uQmtlRmx6UW5wRU1XMVBPSEpLUmxscVFVWldTVzl6U21SeE4ySldka3BzIgoJCX0sCgkJImh0dHBzOi8vaW5kZXguZG9ja2VyLmlvL3YxLyI6IHsKCQkJImF1dGgiOiAiZEdsdGJHVmhabU5zYjNWa09tUmphM0pmY0dGMFh6TkVWRE53T1VWUFkzUnlhMnhEUzBOTllXVk9lVzVzV2paSGN3PT0iCgkJfQoJfQp9
+kind: Secret
+metadata:
+  name: regcred
+  namespace: solidus
+type: kubernetes.io/dockerconfigjson

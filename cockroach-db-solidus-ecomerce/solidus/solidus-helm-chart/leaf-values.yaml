@@ -1,0 +1,18 @@
+dbhost: cockroachdb-leaf.cockroach-db-leaf.svc.cluster.local
+
+ingress:
+  annotations:
+   nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Cluster-Name: Leaf";
+  hosts:
+    - host: solidus-leaf.domains.leaf.cloud
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: multi-cluster-demo.com
+      paths:
+        - path: /
+          pathType: Prefix
+    - paths:
+        - path: /
+          pathType: Prefix

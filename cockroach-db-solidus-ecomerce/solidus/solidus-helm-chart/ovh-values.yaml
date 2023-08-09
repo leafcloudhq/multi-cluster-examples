@@ -1,0 +1,20 @@
+dbhost: cockroachdb-ovh.cockroach-db-ovh.svc.cluster.local
+
+
+
+ingress:
+  annotations:
+   nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Cluster-Name: Ovh";
+  hosts:
+    - host: solidus-ovh.domains.leaf.cloud
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: multi-cluster-demo.com
+      paths:
+        - path: /
+          pathType: Prefix
+    - paths:
+        - path: /
+          pathType: Prefix
