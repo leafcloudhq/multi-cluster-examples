@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    meta.helm.sh/release-name: cockroachdb-fuga
+    meta.helm.sh/release-namespace: cockroach-db-fuga
+  creationTimestamp: "2023-07-31T18:59:40Z"
+  generation: 30
+  labels:
+    app.kubernetes.io/component: cockroachdb
+    app.kubernetes.io/instance: cockroachdb-fuga
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: cockroachdb
+    helm.sh/chart: cockroachdb-11.1.0
+  name: cockroachdb-fuga
+  namespace: cockroach-db-fuga
+  resourceVersion: "28792834"
+  uid: a65ef5e5-42ba-4d8a-bf2b-7fa78167468d
+spec:
+  podManagementPolicy: Parallel
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: cockroachdb
+      app.kubernetes.io/instance: cockroachdb-fuga
+      app.kubernetes.io/name: cockroachdb
+  serviceName: cockroachdb-fuga
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/component: cockroachdb
+        app.kubernetes.io/instance: cockroachdb-fuga
+        app.kubernetes.io/name: cockroachdb
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: cockroachdb
+                  app.kubernetes.io/instance: cockroachdb-fuga
+                  app.kubernetes.io/name: cockroachdb
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - shell
+        - -ecx
+        - exec /cockroach/cockroach start --join=cockroachdb-fuga-0.cockroachdb-leaf,cockroachdb-leaf-0.cockroachdb-leaf,cockroachdb-ovh-0.cockroachdb-ovh
+          --advertise-addr $(hostname).cockroachdb-fuga --insecure --http-port=8080
+          --port=26257 --cache=25% --max-sql-memory=25% --logtostderr=INFO
+        env:
+        - name: STATEFULSET_NAME
+          value: cockroachdb-fuga
+        - name: STATEFULSET_FQDN
+          value: cockroachdb-fuga.cockroach-db-fuga.svc.cluster.local
+        - name: COCKROACH_CHANNEL
+          value: kubernetes-helm
+        image: cockroachdb/cockroach:v23.1.5
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          failureThreshold: 1000000
+          httpGet:
+            path: /health
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 90000
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 5
+        name: db
+        ports:
+        - containerPort: 26257
+          name: grpc
+          protocol: TCP
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 2
+          httpGet:
+            path: /health?ready=1
+            port: http
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /cockroach/cockroach-data/
+          name: datadir
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccount: cockroachdb-fuga
+      serviceAccountName: cockroachdb-fuga
+      terminationGracePeriodSeconds: 60
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/component: cockroachdb
+            app.kubernetes.io/instance: cockroachdb-fuga
+            app.kubernetes.io/name: cockroachdb
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: ScheduleAnyway
+      volumes:
+      - name: datadir
+        persistentVolumeClaim:
+          claimName: datadir
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      creationTimestamp: null
+      labels:
+        app.kubernetes.io/instance: cockroachdb-fuga
+        app.kubernetes.io/name: cockroachdb
+      name: datadir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: default-class
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+status:
+  availableReplicas: 1
+  collisionCount: 0
+  currentReplicas: 1
+  currentRevision: cockroachdb-fuga-b8c5f9db8
+  observedGeneration: 30
+  readyReplicas: 1
+  replicas: 1
+  updateRevision: cockroachdb-fuga-b8c5f9db8
+  updatedReplicas: 1
