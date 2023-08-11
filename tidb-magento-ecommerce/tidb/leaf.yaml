@@ -1,0 +1,57 @@
+apiVersion: pingcap.com/v1alpha1
+kind: TidbCluster
+metadata:
+  name: leaf
+  namespace: tidb
+spec:
+  acrossK8s: true
+  clusterDomain: cluster.local
+  configUpdateStrategy: RollingUpdate
+  discovery: {}
+  enableDynamicConfiguration: true
+  enablePVReclaim: false
+  helper:
+    image: alpine:3.16.0
+  imagePullPolicy: IfNotPresent
+  pd:
+    baseImage: pingcap/pd
+    config: ""
+    maxFailoverCount: 0
+    replicas: 1
+    requests:
+      storage: 2Gi
+  pvReclaimPolicy: Retain
+  tidb:
+    baseImage: elotl/tidb
+    version: v7.1.0-wget
+    config: |
+      [log]
+        [log.file]
+          max-backups = 3
+    maxFailoverCount: 0
+    replicas: 1
+    service:
+      type: ClusterIP
+  tikv:
+    baseImage: elotl/tikv
+    version: v7.1.0-wget
+    config: |
+      [raftdb]
+        max-open-files = 256
+
+      [rocksdb]
+        max-open-files = 256
+
+      [storage]
+        reserve-space = "0MB"
+    evictLeaderTimeout: 1m
+    maxFailoverCount: 0
+    replicas: 1
+    requests:
+      storage: 2Gi
+    scalePolicy:
+      scaleInParallelism: 1
+      scaleOutParallelism: 1
+  timezone: UTC
+  tlsCluster: {}
+  version: v7.1.0
