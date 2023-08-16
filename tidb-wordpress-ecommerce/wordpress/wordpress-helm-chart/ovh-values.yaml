@@ -1,0 +1,19 @@
+dbhost: ovh-tidb.tidb.svc.cluster.local:4000
+
+
+ingress:
+  annotations:
+   nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Cluster-Name: Ovh";
+  hosts:
+    - host: wordpress-ovh.domains.leaf.cloud
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: multi-cluster-demo.com
+      paths:
+        - path: /
+          pathType: Prefix
+    - paths:
+        - path: /
+          pathType: Prefix

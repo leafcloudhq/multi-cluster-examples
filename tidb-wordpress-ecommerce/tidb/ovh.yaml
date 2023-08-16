@@ -1,7 +1,7 @@
 apiVersion: pingcap.com/v1alpha1
 kind: TidbCluster
 metadata:
-  name: fuga
+  name: ovh
   namespace: tidb
 spec:
   acrossK8s: true
@@ -22,12 +22,13 @@ spec:
     maxFailoverCount: 0
     replicas: 1
     requests:
-      storage: 2Gi
+      storage: 10Gi
   pvReclaimPolicy: Retain
   tidb:
     baseImage: elotl/tidb
     version: v7.1.0-wget
     config: |
+      new_collations_enabled_on_first_bootstrap = false
       [log]
         [log.file]
           max-backups = 3
@@ -51,7 +52,7 @@ spec:
     maxFailoverCount: 0
     replicas: 1
     requests:
-      storage: 2Gi
+      storage: 10Gi
     scalePolicy:
       scaleInParallelism: 1
       scaleOutParallelism: 1
